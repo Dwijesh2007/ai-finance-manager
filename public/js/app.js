@@ -1,10 +1,10 @@
 // Application State
 let financialData = {
-    salary: 60000,
-    monthly_expenses: 35000,
-    savings: 300000,
-    investments: 200000,
-    loans: 100000,
+    salary: 80000,
+    monthly_expenses: 45000,
+    savings: 500000,
+    investments: 300000,
+    loans: 200000,
     credit_score: 720
 };
 
