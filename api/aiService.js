@@ -8,7 +8,7 @@ const openai = new OpenAI({
 const getFinancialAdvice = async (message, financialData) => {
     try {
         const completion = await openai.chat.completions.create({
-            model: "deepseek-ai/deepseek-v3.2",
+            model: "deepseek-ai/deepseek-r1-distill-llama-8b",
             messages: [
                 {
                     role: "system", 
@@ -21,7 +21,7 @@ const getFinancialAdvice = async (message, financialData) => {
             ],
             temperature: 0.6,
             top_p: 0.95,
-            max_tokens: 8192,
+            max_tokens: 2048,
             extra_body: { "chat_template_kwargs": { "thinking": true } }
         });
 
