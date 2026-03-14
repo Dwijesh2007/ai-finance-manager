@@ -13,6 +13,7 @@
     "express": "^4.18.2",
     "firebase-admin": "^11.11.0",
     "langchain": "^0.0.170",
-    "openai": "^4.12.0"
+    "openai": "^4.12.0",
+    "axios": "^1.6.0"
   }
 }

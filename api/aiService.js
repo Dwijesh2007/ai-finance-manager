@@ -1,43 +1,50 @@
-const { OpenAI } = require('openai');
+const axios = require('axios');
 
-const openai = new OpenAI({
-    baseURL: "https://integrate.api.nvidia.com/v1",
-    apiKey: "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"
-});
+const invoke_url = "https://integrate.api.nvidia.com/v1/chat/completions";
+const stream = false;
+
+const headers = {
+  "Authorization": "Bearer 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",
+  "Accept": stream ? "text/event-stream" : "application/json"
+};
 
 const getFinancialAdvice = async (message, financialData) => {
     try {
-        const completion = await openai.chat.completions.create({
-            model: "nvidia/nemotron-3-super-120b-a12b",
-            messages: [
+        const payload = {
+            "model": "google/gemma-3n-e4b-it",
+            "messages": [
                 {
-                    role: "system", 
-                    content: "You are an expert, professional AI Financial Advisor. Analyze the financial profile of the user and provide actionable, intelligent advice answering their query. Focus on realistic and critical impacts such as debt ratio, emergency funds, and investment pacing."
+                    "role": "system", 
+                    "content": "You are an expert, professional AI Financial Advisor. Analyze the financial profile of the user and provide actionable, intelligent advice answering their query. Focus on realistic and critical impacts such as debt ratio, emergency funds, and investment pacing."
                 },
                 {
-                    role: "user",
-                    content: `User Financial Profile:\n${JSON.stringify(financialData, null, 2)}\n\nUser Query: ${message}`
+                    "role": "user",
+                    "content": `User Financial Profile:\n${JSON.stringify(financialData, null, 2)}\n\nUser Query: ${message}`
                 }
             ],
-            temperature: 1,
-            top_p: 0.95,
-            max_tokens: 16384,
-            extra_body: { "chat_template_kwargs": { "enable_thinking": true }, "reasoning_budget": 16384 }
-        });
+            "max_tokens": 512,
+            "temperature": 0.20,
+            "top_p": 0.70,
+            "frequency_penalty": 0.00,
+            "presence_penalty": 0.00,
+            "stream": stream
+        };
 
-        // The response format from OpenAI SDK will have choices[0].message
-        let responseContent = completion.choices[0]?.message?.content || "";
-        
-        // Some models include reasoning_content in the message object, though usually it's in the stream delta
-        // If present, let's include it for transparency
-        const reasoning = completion.choices[0]?.message?.reasoning_content;
-        if (reasoning) {
-            responseContent = `[AI Thinking: ${reasoning}]\n\n${responseContent}`;
+        const response = await axios.post(invoke_url, payload, { headers });
+
+        if (stream) {
+            let fullResponse = "";
+            for (const line of response.data) {
+                if (line) {
+                    fullResponse += line.toString() + "\n";
+                }
+            }
+            return fullResponse.trim();
+        } else {
+            return response.data.choices[0]?.message?.content || "No response received";
         }
-
-        return responseContent.trim();
     } catch (error) {
-        console.error("DeepSeek API Error:", error);
+        console.error("NVIDIA API Error:", error);
         return getMockedAdvice(message, financialData);
     }
 };
