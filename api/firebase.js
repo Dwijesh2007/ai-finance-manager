@@ -3,18 +3,16 @@ const admin = require('firebase-admin');
 // Initialize Firebase Admin SDK
 try {
     if (!admin.apps.length) {
-        const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT_KEY 
-            ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY)
-            : null;
-
-        if (serviceAccount) {
+        const serviceAccountConfig = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+        if (serviceAccountConfig && serviceAccountConfig.length > 10) {
+            const serviceAccount = JSON.parse(serviceAccountConfig);
             admin.initializeApp({
                 credential: admin.credential.cert(serviceAccount)
             });
             console.log("Firebase Admin successfully initialized.");
         } else {
-            console.warn("Firebase Admin initialized without service account config. Perfect for local dev/testing without active Auth DB.");
-            admin.initializeApp();
+            // Do NOT call initializeApp() empty, this throws CONFIGURATION_NOT_FOUND in Vercel function edge instances
+            console.warn("Firebase Admin NOT initialized. Add FIREBASE_SERVICE_ACCOUNT_KEY to your Vercel Environment Variables to use Auth Middleware.");
         }
     }
 } catch (e) {
