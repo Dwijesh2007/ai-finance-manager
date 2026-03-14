@@ -11,21 +11,22 @@ let financialData = {
 let assetChartInstance = null;
 let simChartInstance = null;
 
-// Initialize when auth is ready
+// Initialize when app loads
 function initApp(userData) {
     if (userData) {
-        document.getElementById('auth-overlay').classList.add('hidden');
         document.getElementById('user-profile').style.display = 'flex';
         document.getElementById('user-email').textContent = userData.email;
         document.getElementById('user-avatar').textContent = userData.email.charAt(0).toUpperCase();
         
         populateForm(financialData);
         updateDashboard(financialData);
-    } else {
-        document.getElementById('auth-overlay').classList.remove('hidden');
-        document.getElementById('user-profile').style.display = 'none';
     }
 }
+
+// Auto-initialize since auth is removed
+document.addEventListener('DOMContentLoaded', () => {
+    initApp({ email: 'user@example.com' });
+});
 
 // Navigation Logic
 const navLinks = {
