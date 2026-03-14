@@ -2,13 +2,13 @@ const { OpenAI } = require('openai');
 
 const openai = new OpenAI({
     baseURL: "https://integrate.api.nvidia.com/v1",
-    apiKey: "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"
+    apiKey: "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"
 });
 
 const getFinancialAdvice = async (message, financialData) => {
     try {
         const completion = await openai.chat.completions.create({
-            model: "deepseek-ai/deepseek-r1-distill-llama-8b",
+            model: "nvidia/nemotron-3-super-120b-a12b",
             messages: [
                 {
                     role: "system", 
@@ -19,10 +19,10 @@ const getFinancialAdvice = async (message, financialData) => {
                     content: `User Financial Profile:\n${JSON.stringify(financialData, null, 2)}\n\nUser Query: ${message}`
                 }
             ],
-            temperature: 0.6,
+            temperature: 1,
             top_p: 0.95,
-            max_tokens: 2048,
-            extra_body: { "chat_template_kwargs": { "thinking": true } }
+            max_tokens: 16384,
+            extra_body: { "chat_template_kwargs": { "enable_thinking": true }, "reasoning_budget": 16384 }
         });
 
         // The response format from OpenAI SDK will have choices[0].message
